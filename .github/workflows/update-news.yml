@@ -9,7 +9,8 @@ on:
         default: false
         type: boolean
   schedule:
-    - cron: "17 * * * *"
+    # 09:00 Asia/Shanghai. Manual runs remain available through workflow_dispatch.
+    - cron: "0 1 * * *"
 
 concurrency:
   group: update-ai-news-${{ github.ref }}
@@ -40,15 +41,15 @@ jobs:
 
       - name: Prepare OPML
         env:
-          FOLLOW_OPML_B64: ${{ secrets.FOLLOW_OPML_B64 }}
+          FRONTEND_DEV_OPML_B64: ${{ secrets.FRONTEND_DEV_OPML_B64 }}
         run: |
           mkdir -p feeds
-          if [ -n "$FOLLOW_OPML_B64" ]; then
-            echo "$FOLLOW_OPML_B64" | base64 --decode > feeds/follow.opml
-            echo "Loaded feeds/follow.opml from FOLLOW_OPML_B64 secret"
-          elif [ -f feeds/follow.example.opml ]; then
-            cp feeds/follow.example.opml feeds/follow.opml
-            echo "Loaded public demo OPML from feeds/follow.example.opml"
+          if [ -n "$FRONTEND_DEV_OPML_B64" ]; then
+            echo "$FRONTEND_DEV_OPML_B64" | base64 --decode > feeds/frontend-dev.opml
+            echo "Loaded feeds/frontend-dev.opml from FRONTEND_DEV_OPML_B64 secret"
+          elif [ -f feeds/frontend-dev.example.opml ]; then
+            cp feeds/frontend-dev.example.opml feeds/frontend-dev.opml
+            echo "Loaded public frontend developer OPML template"
           else
             echo "No OPML file available; RSS OPML is optional"
           fi
@@ -102,8 +103,8 @@ jobs:
           DEEPSEEK_MODEL: ${{ vars.DEEPSEEK_MODEL }}
           TITLE_ENHANCE_MAX_PER_RUN: ${{ vars.TITLE_ENHANCE_MAX_PER_RUN }}
         run: |
-          if [ -f feeds/follow.opml ]; then
-            python scripts/update_news.py --output-dir data --window-hours 24 --archive-days 21 --rss-opml feeds/follow.opml --rss-max-feeds "${RSS_MAX_FEEDS:-10}"
+          if [ -f feeds/frontend-dev.opml ]; then
+            python scripts/update_news.py --output-dir data --window-hours 24 --archive-days 21 --rss-opml feeds/frontend-dev.opml --rss-max-feeds "${RSS_MAX_FEEDS:-10}"
           else
             python scripts/update_news.py --output-dir data --window-hours 24 --archive-days 21
           fi
@@ -114,6 +115,9 @@ jobs:
           DEEPSEEK_API_BASE_URL: ${{ vars.DEEPSEEK_API_BASE_URL }}
           DEEPSEEK_MODEL: ${{ vars.DEEPSEEK_MODEL }}
         run: python scripts/persona_score.py --data-dir data
+
+      - name: Generate frontend developer digest
+        run: python scripts/frontend_digest.py
 
       - name: Commit and push changes
         env:

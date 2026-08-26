@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opml version="2.0">
+  <head>
+    <title>Frontend AI developer sources</title>
+  </head>
+  <body>
+    <outline text="Official coding and developer AI sources">
+      <outline text="OpenAI News" type="rss" xmlUrl="https://openai.com/news/rss.xml" htmlUrl="https://openai.com/news" />
+      <outline text="GitHub AI and ML" type="rss" xmlUrl="https://github.blog/ai-and-ml/feed/" htmlUrl="https://github.blog/ai-and-ml/" />
+      <outline text="Hugging Face Blog" type="rss" xmlUrl="https://huggingface.co/blog/feed.xml" htmlUrl="https://huggingface.co/blog" />
+    </outline>
+  </body>
+</opml>
