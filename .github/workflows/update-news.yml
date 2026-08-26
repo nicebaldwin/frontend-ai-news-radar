@@ -9,8 +9,8 @@ on:
         default: false
         type: boolean
   schedule:
-    # 09:00 Asia/Shanghai. Manual runs remain available through workflow_dispatch.
-    - cron: "0 1 * * *"
+    # 08:00 Asia/Shanghai. Codex reads the generated digest at 09:00.
+    - cron: "0 0 * * *"
 
 concurrency:
   group: update-ai-news-${{ github.ref }}
